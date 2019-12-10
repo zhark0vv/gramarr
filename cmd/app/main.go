@@ -1,4 +1,4 @@
-package main
+memodota main
 
 import (
 	"flag"
