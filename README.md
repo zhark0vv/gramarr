@@ -41,6 +41,13 @@ Just [download](https://github.com/alcmoraes/gramarr/releases/latest) the respec
 
 *Obs: Don't forget to put the `config.json` in the same folder as the binary file.*
 
+### In docker
+
+copy file `config.json.template` to `config.json` to yourwayonhost
+run in docker   -   docker run -d --name=sonarr-radarr-telegram-bot --restart=always -v yourwayonhost:/config memodota/gramarrru
+
 ## TODO
 
-- **Package oriented**: Reorganize the project.
+- Fully translate to Russian
+- Make language selectible in config file
+- Fix Adding TV Shows

@@ -1,4 +1,4 @@
-module github.com/tommy647/gramarr
+module github.com/Memodota/gramarr
 
 go 1.12
 
