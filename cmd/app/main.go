@@ -1,4 +1,4 @@
-memodota main
+package main
 
 import (
 	"flag"
@@ -6,13 +6,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/tommy647/gramarr/internal/config"
-	"github.com/tommy647/gramarr/internal/conversation"
-	"github.com/tommy647/gramarr/internal/env"
-	"github.com/tommy647/gramarr/internal/radarr"
-	"github.com/tommy647/gramarr/internal/router"
-	"github.com/tommy647/gramarr/internal/sonarr"
-	"github.com/tommy647/gramarr/internal/users"
+	"github.com/memodota/gramarr/internal/config"
+	"github.com/memodota/gramarr/internal/conversation"
+	"github.com/memodota/gramarr/internal/env"
+	"github.com/memodota/gramarr/internal/radarr"
+	"github.com/memodota/gramarr/internal/router"
+	"github.com/memodota/gramarr/internal/sonarr"
+	"github.com/memodota/gramarr/internal/users"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
