@@ -10,15 +10,15 @@ import (
 )
 
 func (e *Env) HandleCancel(m *tb.Message) {
-	util.Send(e.Bot, m.Sender, "There is no active command to cancel. I wasn't doing anything anyway. Zzzzz...")
+	util.Send(e.Bot, m.Sender, "Не нашлось активной операци для отмены, кусок мяса. Я не собирался ничего делать. Аста ла виста...")
 }
 
 func (e *Env) HandleConvoCancel(c conversation.Conversation, m *tb.Message) {
 	e.CM.StopConversation(c)
 
 	var msg []string
-	msg = append(msg, fmt.Sprintf("The '*%s*' command was cancelled. Anything else I can do for you?", c.Name()))
+	msg = append(msg, fmt.Sprintf("Команда '*%s*' была отменена. Что тебе еще кожаный у***ок?", c.Name()))
 	msg = append(msg, "")
-	msg = append(msg, "Send /help for a list of commands.")
+	msg = append(msg, "Отправь /help чтобы прочитать список команд.")
 	util.Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
 }
