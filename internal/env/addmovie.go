@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tommy647/gramarr/internal/radarr"
-	"github.com/tommy647/gramarr/internal/util"
+	"github.com/memodota/gramarr/internal/radarr"
+	"github.com/memodota/gramarr/internal/util"
 	"gopkg.in/tucnak/telebot.v2"
 	tb "gopkg.in/tucnak/telebot.v2"
 )

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tommy647/gramarr/internal/config"
-	"github.com/tommy647/gramarr/internal/conversation"
-	"github.com/tommy647/gramarr/internal/radarr"
-	"github.com/tommy647/gramarr/internal/sonarr"
-	"github.com/tommy647/gramarr/internal/users"
-	"github.com/tommy647/gramarr/internal/util"
+	"github.com/memodota/gramarr/internal/config"
+	"github.com/memodota/gramarr/internal/conversation"
+	"github.com/memodota/gramarr/internal/radarr"
+	"github.com/memodota/gramarr/internal/sonarr"
+	"github.com/memodota/gramarr/internal/users"
+	"github.com/memodota/gramarr/internal/util"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 

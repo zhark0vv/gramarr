@@ -49,5 +49,5 @@ run in docker   -   docker run -d --name=sonarr-radarr-telegram-bot --restart=al
 ## TODO
 
 - Fully translate to Russian
-- Make language selectible in config file
+- Make language selectable in config file
 - Fix Adding TV Shows
