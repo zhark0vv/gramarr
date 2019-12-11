@@ -43,9 +43,9 @@ Just [download](https://github.com/memodota/gramarr/releases/latest) the respect
 
 ### In docker
 
-copy file `config.json.template` to `config.json` to "yourwayonhost"
-docker pull memodota/gramarrru:latest
-run in docker   -   docker run -d --name=sonarr-radarr-telegram-bot --restart=always -v yourwayonhost:/config memodota/gramarrru
+- copy file `config.json.template` to `config.json` to "yourwayonhost"
+- docker pull memodota/gramarrru:latest
+- run in docker   -   docker run -d --name=sonarr-radarr-telegram-bot --restart=always -v yourwayonhost:/config memodota/gramarrru
 
 ## TODO
 
