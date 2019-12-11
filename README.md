@@ -5,7 +5,7 @@ A [Radarr](https://github.com/Radarr/Radarr)/[Sonarr](https://github.com/Sonarr/
 
 ### Sonarr
 
-- Search for TV Shows by name.
+- Search for TV Shows by name. - does not work for now
 - Pick which seasons you want to download.
 - Choose which quality and language profile you want to download.
 
@@ -30,20 +30,21 @@ A [Radarr](https://github.com/Radarr/Radarr)/[Sonarr](https://github.com/Sonarr/
 ### From source
 
 ```bash
-$ go get github.com/alcmoraes/gramarr
-$ cd $GOPATH/src/github.com/alcmoraes/gramarr
+$ go get github.com/memodota/gramarr
+$ cd $GOPATH/src/github.com/memodota/gramarr
 $ go run .
 ```
 
 ### From release
 
-Just [download](https://github.com/alcmoraes/gramarr/releases/latest) the respective binary for your System.
+Just [download](https://github.com/memodota/gramarr/releases/latest) the respective binary for your System.
 
 *Obs: Don't forget to put the `config.json` in the same folder as the binary file.*
 
 ### In docker
 
-copy file `config.json.template` to `config.json` to yourwayonhost
+copy file `config.json.template` to `config.json` to "yourwayonhost"
+docker pull memodota/gramarrru:latest
 run in docker   -   docker run -d --name=sonarr-radarr-telegram-bot --restart=always -v yourwayonhost:/config memodota/gramarrru
 
 ## TODO
