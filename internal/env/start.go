@@ -18,7 +18,7 @@ func (e *Env) HandleStart(m *tb.Message) {
 
 	if !exists {
 		msg = append(msg, "")
-		msg = append(msg, "/auth [password] - введите пароль в указанном виде, где "[password]" - пароль")
+		msg = append(msg, "/auth [password] - введите пароль в указанном виде, где [password] - пароль")
 	}
 
 	if exists && user.IsAdmin() {
