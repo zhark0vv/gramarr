@@ -67,7 +67,7 @@ func createApiURL(c Config) string {
 	if c.Port != 80 {
 		u.Host = fmt.Sprintf("%s:%d", c.Hostname, c.Port)
 	}
-	u.Path = "/api/v3"
+	u.Path = "/api"
 	if c.URLBase != "" {
 		u.Path = fmt.Sprintf("%s/api", c.URLBase)
 	}
