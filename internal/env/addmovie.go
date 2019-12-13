@@ -166,7 +166,7 @@ func (c *AddMovieConversation) AskFolder(m *tb.Message) func(*telebot.Message) {
 
 	// Send the results
 	var msg []string
-	msg = append(msg, fmt.Sprintf("*Found %d folders:*", len(folders)))
+	msg = append(msg, fmt.Sprintf("*Нашел %d папок:*", len(folders)))
 	for i, folder := range folders {
 		msg = append(msg, fmt.Sprintf("%d) %s", i+1, util.EscapeMarkdown(filepath.Base(folder.Path))))
 	}
