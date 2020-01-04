@@ -110,14 +110,13 @@ func (c *Client) GetProfile(p string) ([]Profile, error) {
 
 }
 
-func (c *Client) AddTVShow(m TVShow, languageProfile int, qualityProfile int, path string) (tvShow TVShow, err error) {
+func (c *Client) AddTVShow(m TVShow, qualityProfile int, path string) (tvShow TVShow, err error) {
 
 	request := AddTVShowRequest{
 		Title:             m.Title,
 		TitleSlug:         m.TitleSlug,
 		Images:            m.Images,
 		QualityProfileID:  qualityProfile,
-		LanguageProfileID: languageProfile,
 		TVDBID:            m.TVDBID,
 		RootFolderPath:    path,
 		Monitored:         true,

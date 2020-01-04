@@ -171,7 +171,7 @@ func (c *AddTVShowConversation) AskPickTVShowSeason(m *telebot.Message) func(*tb
 
 func (c *AddTVShowConversation) AskPickTVShowQuality(m *telebot.Message) func(*tb.Message) {
 
-	profiles, err := c.env.Sonarr.GetProfile("qualityprofile")
+	profiles, err := c.env.Sonarr.GetProfile("profile")
 
 	// GetProfile Service Failed
 	if err != nil {
@@ -204,7 +204,8 @@ func (c *AddTVShowConversation) AskPickTVShowQuality(m *telebot.Message) func(*t
 			return
 		}
 
-		c.currentStep = c.AskPickTVShowLanguage(m)
+		//c.currentStep = c.AskPickTVShowLanguage(m)
+		c.currentStep = c.AskFolder(m)
 	}
 }
 
