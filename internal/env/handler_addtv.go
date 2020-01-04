@@ -306,7 +306,7 @@ func (c *AddTVShowConversation) AskFolder(m *telebot.Message) func(*tb.Message) 
 }
 
 func (c *AddTVShowConversation) AddTVShow(m *telebot.Message) {
-	_, err := c.env.Sonarr.AddTVShow(*c.selectedTVShow, c.selectedLanguageProfile.ID, c.selectedQualityProfile.ID, c.selectedFolder.Path)
+	_, err := c.env.Sonarr.AddTVShow(*c.selectedTVShow, c.selectedQualityProfile.ID, c.selectedFolder.Path)
 
 	// Failed to add TV
 	if err != nil {
