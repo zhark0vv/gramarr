@@ -81,11 +81,11 @@ func (c *Client) SearchTVShows(term string) ([]TVShow, error) {
 		return nil, err
 	}
 
-	tvShows := *resp.Result().(*[]TVShow)
-	if len(tvShows) > c.maxResults {
-		tvShows = tvShows[:c.maxResults]
+	TVShows := *resp.Result().(*[]TVShow)
+	if len(TVShows) > c.maxResults {
+		TVShows = TVShows[:c.maxResults]
 	}
-	return tvShows, nil
+	return TVShows, nil
 }
 
 func (c *Client) GetFolders() ([]Folder, error) {

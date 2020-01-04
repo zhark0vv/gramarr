@@ -56,7 +56,7 @@ func (c *AddMovieConversation) AskMovie(m *tb.Message) func(*telebot.Message) {
 
 		// No Results
 		if len(movies) == 0 {
-			msg := fmt.Sprintf("Фильма с указанным названием '%s' не нашлось", util.EscapeMarkdown(c.movieQuery))
+			msg := fmt.Sprintf("Фильма с указанным названием - '%s', не нашлось", util.EscapeMarkdown(c.movieQuery))
 			util.Send(c.env.Bot, m.Sender, msg)
 			c.env.CM.StopConversation(c)
 			return
