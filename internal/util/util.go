@@ -17,7 +17,7 @@ func SendError(bot *tb.Bot, to tb.Recipient, msg string) {
 	bot.Send(to, msg, tb.ModeMarkdown)
 }
 
-func SendAdmin(bot *tb.Bot, to []User, msg string) {
+func SendAdmin(bot *tb.Bot, to []users.User, msg string) {
 	SendMany(bot, to, fmt.Sprintf("*[Admin]* %s", msg))
 }
 

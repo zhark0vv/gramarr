@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"time"
 
