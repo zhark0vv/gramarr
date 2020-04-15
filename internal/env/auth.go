@@ -53,7 +53,7 @@ func (e *Env) HandleAuth(m *tb.Message) {
 		util.Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
 
 		// Notify Admin
-		adminMsg := fmt.Sprintf("%s вам предоставили права хозяина.", util.DisplayName(m.Sender))
+		adminMsg := fmt.Sprintf("%s предоставили права админа.", util.DisplayName(m.Sender))
 		util.SendAdmin(e.Bot, e.Users.Admins(), adminMsg)
 
 		return
