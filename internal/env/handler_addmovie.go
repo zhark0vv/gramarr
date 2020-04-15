@@ -219,7 +219,7 @@ func (c *AddMovieConversation) AddMovie(m *tb.Message) {
 	util.Send(c.env.Bot, m.Sender, "Фильм был добавлен!")
 
 	// Notify Admin
-	adminMsg := fmt.Sprintf("%s added movie '%s'", util.DisplayName(m.Sender), util.EscapeMarkdown(c.selectedMovie.String()))
+	adminMsg := fmt.Sprintf("%s добавил фильм '%s'", util.DisplayName(m.Sender), util.EscapeMarkdown(c.selectedMovie.String()))
 	util.SendAdmin(c.env.Bot, c.env.Users.Admins(), adminMsg)
 
 	c.env.CM.StopConversation(c)

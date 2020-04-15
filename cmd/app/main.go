@@ -19,7 +19,7 @@ import (
 )
 
 // Flags
-var configDir = flag.String("configDir", ".", "config dir for settings and logs")
+var configDir = flag.String("configDir", "./config", "config dir for settings and logs")
 
 func main() {
 	flag.Parse()

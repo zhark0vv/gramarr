@@ -39,8 +39,8 @@ func SendKeyboardList(bot *tb.Bot, to tb.Recipient, msg string, list []string) {
 }
 
 func SendMany(bot *tb.Bot, to []User, msg string) {
-	for _, User := range to {
-		bot.Send(User, msg, tb.ModeMarkdown)
+	for _, user := range to {
+		bot.Send(user, msg, tb.ModeMarkdown)
 	}
 }
 
