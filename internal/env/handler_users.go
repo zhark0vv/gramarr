@@ -2,7 +2,6 @@ package env
 
 import (
 	"github.com/memodota/gramarr/internal/util"
-	"gopkg.in/tucnak/telebot.v2"
 	tb "gopkg.in/tucnak/telebot.v2"
 	"strings"
 )
@@ -10,7 +9,7 @@ import (
 func (e *Env) HandleUsers(m *tb.Message) {
 	err := e.Users.Load()
 	if err != nil {
-		Send(e.Bot, m.Sender, "Error loading users")
+		util.Send(e.Bot, m.Sender, "Error loading users")
 		return
 	}
 
@@ -43,6 +42,6 @@ func (e *Env) HandleUsers(m *tb.Message) {
 	}
 
 	if len(msg) > 0 {
-		Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
+		util.Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
 	}
 }
