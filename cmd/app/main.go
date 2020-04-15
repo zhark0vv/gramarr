@@ -14,7 +14,7 @@ import (
 	"github.com/memodota/gramarr/internal/radarr"
 	"github.com/memodota/gramarr/internal/router"
 	"github.com/memodota/gramarr/internal/sonarr"
-	"github.com/memodota/gramarr/internal/users"
+	"github.com/memodota/gramarr/internal/user"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
