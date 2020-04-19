@@ -11,6 +11,10 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+func (e *Env) HandleAddTVShow(m *telebot.Message) {
+	e.CM.StartConversation(NewAddTVShowConversation(e), m)
+}
+
 func NewAddTVShowConversation(e *Env) *AddTVShowConversation {
 	return &AddTVShowConversation{env: e}
 }

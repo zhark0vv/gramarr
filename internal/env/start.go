@@ -37,4 +37,19 @@ func (e *Env) HandleStart(m *tb.Message) {
 	}
 
 	util.Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
+	var startkeyboard []string
+	if !exists {
+		startkeyboard = append(startkeyboard, "/auth")
+	}
+
+	if exists && user.IsAdmin() {
+		startkeyboard = append(startkeyboard, "/users")
+	}
+
+	if exists && (user.IsMember() || user.IsAdmin()) {
+		startkeyboard = append(startkeyboard, "/addmovie")
+		startkeyboard = append(startkeyboard, "/addtv")
+		startkeyboard = append(startkeyboard, "/cancel")
+	}
+	util.SendKeyboardList(e.Bot, m.Sender, "Выберите команду", startkeyboard)
 }

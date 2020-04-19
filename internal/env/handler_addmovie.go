@@ -11,6 +11,10 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+func (e *Env) HandleAddMovie(m *telebot.Message) {
+	e.CM.StartConversation(NewAddMovieConversation(e), m)
+}
+
 func NewAddMovieConversation(e *Env) *AddMovieConversation {
 	return &AddMovieConversation{env: e}
 }

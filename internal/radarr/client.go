@@ -133,3 +133,54 @@ func (c *Client) AddMovie(m Movie, qualityProfile int, path string) (movie Movie
 	movie = *resp.Result().(*Movie)
 	return
 }
+
+//func (c *Client) DeleteMovie(movieId int) (err error) {
+//	_, err = c.client.R().SetQueryParam("deleteFiles", "true").Delete("movie/" + strconv.Itoa(movieId))
+//	return
+//}
+
+//func (c *Client) UpdateMovie(m Movie) (movie Movie, err error) {
+//	resp, err := c.client.R().SetBody(m).SetResult(Movie{}).Put("movie")
+//	if err != nil {
+//		return
+//	}
+//	movie = *resp.Result().(*Movie)
+//	return
+//}
+
+//func (c *Client) GetMoviesByFolder(folder Folder) (movies []Movie, err error) {
+//	allMovies, err := c.GetMovies()
+//	if err != nil {
+//		return
+//	}
+//	for _, movie := range allMovies {
+//		if strings.HasPrefix(movie.Path, folder.Path) {
+//			movies = append(movies, movie)
+//		}
+//	}
+//	return
+//}
+
+//func (c *Client) GetMovies() (movies []Movie, err error) {
+//	resp, err := c.client.R().SetResult([]Movie{}).Get("movie")
+//	if err != nil {
+//		return
+//	}
+//	allMovies := *resp.Result().(*[]Movie)
+//	for _, movie := range allMovies {
+//		if movie.Monitored {
+//			movies = append(movies, movie)
+//		}
+//	}
+//	return
+//}
+
+func (c *Client) GetRadarrQueue() ([]RadarrQueue, error) {
+	resp, err := c.client.R().SetResult([]RadarrQueue{}).Get("queue")
+	if err != nil {
+		return nil, err
+	}
+
+	queuemovies := *resp.Result().(*[]RadarrQueue)
+	return queuemovies, nil
+}

@@ -2,9 +2,7 @@ package main
 
 import (
 	"flag"
-	//"fmt"
 	"log"
-	//"os"
 	"path/filepath"
 	"time"
 
@@ -94,6 +92,7 @@ func setupHandlers(r *router.Router, e *env.Env) {
 	r.HandleFunc("/addmovie", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleAddMovie)))
 	r.HandleFunc("/addtv", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleAddTVShow)))
 	r.HandleFunc("/users", e.RequirePrivate(e.RequireAuth(users.UAAdmin, e.HandleUsers)))
+	//r.HandleFunc("/radarrqueue", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleRadarrQueue)))
 
 	// Catchall Command
 	r.HandleFallback(e.RequirePrivate(e.RequireAuth(users.UANone, e.HandleFallback)))
