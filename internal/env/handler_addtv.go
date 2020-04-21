@@ -30,6 +30,7 @@ type AddTVShowConversation struct {
 	selectedLanguageProfile *sonarr.Profile
 	selectedFolder          *sonarr.Folder
 	env                     *Env
+	selectedType			string
 }
 
 func (c *AddTVShowConversation) Run(m *telebot.Message) {
@@ -45,7 +46,7 @@ func (c *AddTVShowConversation) CurrentStep() func(*tb.Message) {
 }
 
 func (c *AddTVShowConversation) AskTVShow(m *telebot.Message) func(*tb.Message) {
-	util.Send(c.env.Bot, m.Sender, "What TV Show do you want to search for?")
+	util.Send(c.env.Bot, m.Sender, "Введите название Сериала")
 
 	return func(m *telebot.Message) {
 		c.TVQuery = m.Text
@@ -55,14 +56,14 @@ func (c *AddTVShowConversation) AskTVShow(m *telebot.Message) func(*tb.Message) 
 
 		// Search Service Failed
 		if err != nil {
-			util.SendError(c.env.Bot, m.Sender, "Failed to search TV Show.")
+			util.SendError(c.env.Bot, m.Sender, "Не удалось организовать поиск.")
 			c.env.CM.StopConversation(c)
 			return
 		}
 
 		// No Results
 		if len(TVShows) == 0 {
-			msg := fmt.Sprintf("No TV Show found with the title '%s'", util.EscapeMarkdown(c.TVQuery))
+			msg := fmt.Sprintf("Не нашлось сериала с названием - '%s'", util.EscapeMarkdown(c.TVQuery))
 			util.Send(c.env.Bot, m.Sender, msg)
 			c.env.CM.StopConversation(c)
 			return
@@ -70,7 +71,7 @@ func (c *AddTVShowConversation) AskTVShow(m *telebot.Message) func(*tb.Message) 
 
 		// Found some TVShows! Yay!
 		var msg []string
-		msg = append(msg, fmt.Sprintf("*Found %d TV Shows:*", len(TVShows)))
+		msg = append(msg, fmt.Sprintf("*найдено %d Сериалов:*", len(TVShows)))
 		for i, TV := range TVShows {
 			msg = append(msg, fmt.Sprintf("%d) %s", i+1, util.EscapeMarkdown(TV.String())))
 		}
@@ -87,7 +88,7 @@ func (c *AddTVShowConversation) AskPickTVShow(m *telebot.Message) func(*tb.Messa
 		options = append(options, fmt.Sprintf("%s", TVShow))
 	}
 	options = append(options, "/cancel")
-	util.SendKeyboardList(c.env.Bot, m.Sender, "Which one would you like to download?", options)
+	util.SendKeyboardList(c.env.Bot, m.Sender, "Какой из них скачать?", options)
 
 	return func(m *telebot.Message) {
 
@@ -101,7 +102,7 @@ func (c *AddTVShowConversation) AskPickTVShow(m *telebot.Message) func(*tb.Messa
 
 		// Not a valid TV selection
 		if c.selectedTVShow == nil {
-			util.SendError(c.env.Bot, m.Sender, "Invalid selection.")
+			util.SendError(c.env.Bot, m.Sender, "Не правильный выбор.")
 			c.currentStep = c.AskPickTVShow(m)
 			return
 		}
@@ -115,7 +116,7 @@ func (c *AddTVShowConversation) AskPickTVShowSeason(m *telebot.Message) func(*tb
 	// Send custom reply keyboard
 	var options []string
 	if len(c.selectedTVShowSeasons) > 0 {
-		options = append(options, "Nope. I'm done!")
+		options = append(options, "Нет, это все.")
 	}
 	for _, Season := range c.selectedTVShow.Seasons {
 		if len(c.selectedTVShowSeasons) > 0 {
@@ -134,14 +135,14 @@ func (c *AddTVShowConversation) AskPickTVShowSeason(m *telebot.Message) func(*tb
 	}
 	options = append(options, "/cancel")
 	if len(c.selectedTVShowSeasons) > 0 {
-		util.SendKeyboardList(c.env.Bot, m.Sender, "Any other season?", options)
+		util.SendKeyboardList(c.env.Bot, m.Sender, "Еще?", options)
 	} else {
-		util.SendKeyboardList(c.env.Bot, m.Sender, "Which season would you like to download?", options)
+		util.SendKeyboardList(c.env.Bot, m.Sender, "Какой сезон скачать?", options)
 	}
 
 	return func(m *telebot.Message) {
 
-		if m.Text == "Nope. I'm done!" {
+		if m.Text == "Нет, это все." {
 			for _, selectedTVShowSeason := range c.selectedTVShow.Seasons {
 				selectedTVShowSeason.Monitored = false
 				for _, chosenSeason := range c.selectedTVShowSeasons {
@@ -164,7 +165,7 @@ func (c *AddTVShowConversation) AskPickTVShowSeason(m *telebot.Message) func(*tb
 
 		// Not a valid TV selection
 		if c.selectedTVShowSeasons == nil {
-			util.SendError(c.env.Bot, m.Sender, "Invalid selection.")
+			util.SendError(c.env.Bot, m.Sender, "Не правильный выбор.")
 			c.currentStep = c.AskPickTVShowSeason(m)
 			return
 		}
@@ -179,7 +180,7 @@ func (c *AddTVShowConversation) AskPickTVShowQuality(m *telebot.Message) func(*t
 
 	// GetProfile Service Failed
 	if err != nil {
-		util.SendError(c.env.Bot, m.Sender, "Failed to get quality profiles.")
+		util.SendError(c.env.Bot, m.Sender, "Не удалось запросить профили качества.")
 		c.env.CM.StopConversation(c)
 		return nil
 	}
@@ -190,7 +191,7 @@ func (c *AddTVShowConversation) AskPickTVShowQuality(m *telebot.Message) func(*t
 		options = append(options, fmt.Sprintf("%v", QualityProfile.Name))
 	}
 	options = append(options, "/cancel")
-	util.SendKeyboardList(c.env.Bot, m.Sender, "Which quality shall I look for?", options)
+	util.SendKeyboardList(c.env.Bot, m.Sender, "С каким качеством искать?", options)
 
 	return func(m *telebot.Message) {
 		// Set the selected option
@@ -203,7 +204,7 @@ func (c *AddTVShowConversation) AskPickTVShowQuality(m *telebot.Message) func(*t
 
 		// Not a valid selection
 		if c.selectedQualityProfile == nil {
-			util.SendError(c.env.Bot, m.Sender, "Invalid selection.")
+			util.SendError(c.env.Bot, m.Sender, "Не правильный выбор.")
 			c.currentStep = c.AskPickTVShowQuality(m)
 			return
 		}
@@ -219,7 +220,7 @@ func (c *AddTVShowConversation) AskPickTVShowLanguage(m *telebot.Message) func(*
 
 	// GetProfile Service Failed
 	if err != nil {
-		util.SendError(c.env.Bot, m.Sender, "Failed to get language profiles.")
+		util.SendError(c.env.Bot, m.Sender, "Не удалось запросить профили языков.")
 		c.env.CM.StopConversation(c)
 		return nil
 	}
@@ -230,7 +231,7 @@ func (c *AddTVShowConversation) AskPickTVShowLanguage(m *telebot.Message) func(*
 		options = append(options, fmt.Sprintf("%v", LanguageProfile.Name))
 	}
 	options = append(options, "/cancel")
-	util.SendKeyboardList(c.env.Bot, m.Sender, "Which language shall I look for?", options)
+	util.SendKeyboardList(c.env.Bot, m.Sender, "Какой язык искать?", options)
 
 	return func(m *telebot.Message) {
 		// Set the selected option
@@ -243,7 +244,7 @@ func (c *AddTVShowConversation) AskPickTVShowLanguage(m *telebot.Message) func(*
 
 		// Not a valid selection
 		if c.selectedLanguageProfile == nil {
-			util.SendError(c.env.Bot, m.Sender, "Invalid selection.")
+			util.SendError(c.env.Bot, m.Sender, "Не правильный выбор.")
 			c.currentStep = c.AskPickTVShowLanguage(m)
 			return
 		}
@@ -259,14 +260,14 @@ func (c *AddTVShowConversation) AskFolder(m *telebot.Message) func(*tb.Message) 
 
 	// GetFolders Service Failed
 	if err != nil {
-		util.SendError(c.env.Bot, m.Sender, "Failed to get folders.")
+		util.SendError(c.env.Bot, m.Sender, "Не удалось запросить папки.")
 		c.env.CM.StopConversation(c)
 		return nil
 	}
 
 	// No Results
 	if len(folders) == 0 {
-		util.SendError(c.env.Bot, m.Sender, "No destination folders found.")
+		util.SendError(c.env.Bot, m.Sender, "Не нашлось ни одной папки.")
 		c.env.CM.StopConversation(c)
 		return nil
 	}
@@ -275,7 +276,7 @@ func (c *AddTVShowConversation) AskFolder(m *telebot.Message) func(*tb.Message) 
 
 	// Send the results
 	var msg []string
-	msg = append(msg, fmt.Sprintf("*Found %d folders:*", len(folders)))
+	msg = append(msg, fmt.Sprintf("*Найдено %d папок:*", len(folders)))
 	for i, folder := range folders {
 		msg = append(msg, fmt.Sprintf("%d) %s", i+1, util.EscapeMarkdown(filepath.Base(folder.Path))))
 	}
@@ -287,7 +288,7 @@ func (c *AddTVShowConversation) AskFolder(m *telebot.Message) func(*tb.Message) 
 		options = append(options, fmt.Sprintf("%s", filepath.Base(folder.Path)))
 	}
 	options = append(options, "/cancel")
-	util.SendKeyboardList(c.env.Bot, m.Sender, "Which folder should it download to?", options)
+	util.SendKeyboardList(c.env.Bot, m.Sender, "В какую папку скачать?", options)
 
 	return func(m *telebot.Message) {
 		// Set the selected folder
@@ -300,21 +301,41 @@ func (c *AddTVShowConversation) AskFolder(m *telebot.Message) func(*tb.Message) 
 
 		// Not a valid folder selection
 		if c.selectedTVShow == nil {
-			util.SendError(c.env.Bot, m.Sender, "Invalid selection.")
+			util.SendError(c.env.Bot, m.Sender, "Не правильный выбор.")
 			c.currentStep = c.AskFolder(m)
 			return
 		}
 
+		c.currentStep = c.AskSeriesType(m)
+	}
+}
+
+func (c *AddTVShowConversation) AskSeriesType(m *telebot.Message) func(*tb.Message) {
+	var options []string
+	options = append(options, "anime")
+	options = append(options, "standart")
+	options = append(options, "daily")
+	options = append(options, "/cancel")
+	util.SendKeyboardList(c.env.Bot, m.Sender, "Какой тип сериала?", options)
+
+	return func(m *telebot.Message) {
+	
+		for i, opt := range options {
+		if m.Text == opt {
+			c.selectedType = options[i]
+			break
+		}
+	}
 		c.AddTVShow(m)
 	}
 }
 
 func (c *AddTVShowConversation) AddTVShow(m *telebot.Message) {
-	_, err := c.env.Sonarr.AddTVShow(*c.selectedTVShow, c.selectedQualityProfile.ID, c.selectedFolder.Path)
+	_, err := c.env.Sonarr.AddTVShow(*c.selectedTVShow, c.selectedQualityProfile.ID, c.selectedFolder.Path, c.selectedType)
 
 	// Failed to add TV
 	if err != nil {
-		util.SendError(c.env.Bot, m.Sender, "Failed to add TV.")
+		util.SendError(c.env.Bot, m.Sender, "Не удалось добавить TV.")
 		c.env.CM.StopConversation(c)
 		return
 	}
@@ -325,10 +346,10 @@ func (c *AddTVShowConversation) AddTVShow(m *telebot.Message) {
 	}
 
 	// Notify User
-	util.Send(c.env.Bot, m.Sender, "TV Show has been added!")
+	util.Send(c.env.Bot, m.Sender, "TV Шоу добавлено!")
 
 	// Notify Admin
-	adminMsg := fmt.Sprintf("%s added TV Show '%s'", util.DisplayName(m.Sender), util.EscapeMarkdown(c.selectedTVShow.String()))
+	adminMsg := fmt.Sprintf("%s добавил ТВ Шоу '%s'", util.DisplayName(m.Sender), util.EscapeMarkdown(c.selectedTVShow.String()))
 	util.SendAdmin(c.env.Bot, c.env.Users.Admins(), adminMsg)
 
 	c.env.CM.StopConversation(c)

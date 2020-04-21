@@ -110,7 +110,7 @@ func (c *Client) GetProfile(p string) ([]Profile, error) {
 
 }
 
-func (c *Client) AddTVShow(m TVShow, qualityProfile int, path string) (tvShow TVShow, err error) {
+func (c *Client) AddTVShow(m TVShow, qualityProfile int, path string, seriestype string) (tvShow TVShow, err error) {
 
 	request := AddTVShowRequest{
 		Title:             m.Title,
@@ -123,6 +123,7 @@ func (c *Client) AddTVShow(m TVShow, qualityProfile int, path string) (tvShow TV
 		Year:              m.Year,
 		Seasons:           m.Seasons,
 		AddOptions:        AddTVShowOptions{SearchForMissingEpisodes: true},
+		SeriesType:		seriestype,
 	}
 
 	resp, err := c.client.R().SetBody(request).SetResult(TVShow{}).Post("series")

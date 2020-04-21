@@ -10,6 +10,7 @@ type TVShow struct {
 	TVDBID    int             `json:"tvdbId"`
 	Images    []TVShowImage   `json:"images"`
 	Seasons   []*TVShowSeason `json:"seasons"`
+	SeriesType string 		`json:"seriesType"`
 }
 
 func (m TVShow) String() string {
@@ -53,6 +54,7 @@ type AddTVShowRequest struct {
 	AddOptions        AddTVShowOptions `json:"addOptions"`
 	Year              int              `json:"year"`
 	Seasons           []*TVShowSeason  `json:"seasons"`
+	SeriesType string 		`json:"seriesType"`
 }
 
 type AddTVShowOptions struct {
