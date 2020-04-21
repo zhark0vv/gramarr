@@ -5,9 +5,10 @@ A [Radarr](https://github.com/Radarr/Radarr)/[Sonarr](https://github.com/Sonarr/
 
 ### Sonarr
 
-- Search for TV Shows by name. - does not work for now
+- Search for TV Shows by name.
 - Pick which seasons you want to download.
 - Choose which quality and language profile you want to download.
+- [NEW] Choose Series Type.
 
 ### Radarr
 
@@ -51,4 +52,3 @@ Just [download](https://github.com/memodota/gramarr/releases/latest) the respect
 
 - Fully translate to Russian
 - Make language selectable in config file
-- Fix Adding TV Shows
