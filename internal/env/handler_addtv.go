@@ -30,7 +30,7 @@ type AddTVShowConversation struct {
 	selectedLanguageProfile *sonarr.Profile
 	selectedFolder          *sonarr.Folder
 	env                     *Env
-	selectedType			string
+	selectedType            string
 }
 
 func (c *AddTVShowConversation) Run(m *telebot.Message) {
@@ -313,19 +313,19 @@ func (c *AddTVShowConversation) AskFolder(m *telebot.Message) func(*tb.Message) 
 func (c *AddTVShowConversation) AskSeriesType(m *telebot.Message) func(*tb.Message) {
 	var options []string
 	options = append(options, "anime")
-	options = append(options, "standart")
+	options = append(options, "standard")
 	options = append(options, "daily")
 	options = append(options, "/cancel")
 	util.SendKeyboardList(c.env.Bot, m.Sender, "Какой тип сериала?", options)
 
 	return func(m *telebot.Message) {
-	
+
 		for i, opt := range options {
-		if m.Text == opt {
-			c.selectedType = options[i]
-			break
+			if m.Text == opt {
+				c.selectedType = options[i]
+				break
+			}
 		}
-	}
 		c.AddTVShow(m)
 	}
 }
