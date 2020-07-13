@@ -3,6 +3,7 @@ package env
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/memodota/gramarr/internal/sonarr"
@@ -156,9 +157,9 @@ func (c *AddTVShowConversation) AskPickTVShowSeason(m *telebot.Message) func(*tb
 		}
 
 		// Set the selected TV
-		for i := range options {
-			if m.Text == options[i] {
-				c.selectedTVShowSeasons = append(c.selectedTVShowSeasons, *c.selectedTVShow.Seasons[i])
+		for _, v := range c.selectedTVShow.Seasons {
+			if m.Text == strconv.Itoa(v.SeasonNumber) {
+				c.selectedTVShowSeasons = append(c.selectedTVShowSeasons, *v)
 				break
 			}
 		}
