@@ -3,6 +3,7 @@ package env
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/memodota/gramarr/internal/sonarr"
@@ -30,7 +31,7 @@ type AddTVShowConversation struct {
 	selectedLanguageProfile *sonarr.Profile
 	selectedFolder          *sonarr.Folder
 	env                     *Env
-	selectedType			string
+	selectedType            string
 }
 
 func (c *AddTVShowConversation) Run(m *telebot.Message) {
@@ -156,9 +157,9 @@ func (c *AddTVShowConversation) AskPickTVShowSeason(m *telebot.Message) func(*tb
 		}
 
 		// Set the selected TV
-		for i := range options {
-			if m.Text == options[i] {
-				c.selectedTVShowSeasons = append(c.selectedTVShowSeasons, *c.selectedTVShow.Seasons[i])
+		for _, v := range c.selectedTVShow.Seasons {
+			if m.Text == strconv.Itoa(v.SeasonNumber) {
+				c.selectedTVShowSeasons = append(c.selectedTVShowSeasons, *v)
 				break
 			}
 		}
@@ -313,19 +314,19 @@ func (c *AddTVShowConversation) AskFolder(m *telebot.Message) func(*tb.Message) 
 func (c *AddTVShowConversation) AskSeriesType(m *telebot.Message) func(*tb.Message) {
 	var options []string
 	options = append(options, "anime")
-	options = append(options, "standart")
+	options = append(options, "standard")
 	options = append(options, "daily")
 	options = append(options, "/cancel")
 	util.SendKeyboardList(c.env.Bot, m.Sender, "Какой тип сериала?", options)
 
 	return func(m *telebot.Message) {
-	
+
 		for i, opt := range options {
-		if m.Text == opt {
-			c.selectedType = options[i]
-			break
+			if m.Text == opt {
+				c.selectedType = options[i]
+				break
+			}
 		}
-	}
 		c.AddTVShow(m)
 	}
 }
