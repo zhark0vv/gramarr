@@ -174,6 +174,15 @@ func (c *AddMovieConversation) AskFolder(m *tb.Message) func(*telebot.Message) {
 	}
 
 	// Found folders!
+	if len(folders) == 1 {
+		c.selectedFolder = &c.folderResults[0]
+		util.SendKeyboardList(c.env.Bot, m.Sender,
+			fmt.Sprintf("Найдена всего одна папка - %s, выбрал ее", c.selectedFolder.Path),
+			[]string{"OK"})
+		return func(m *tb.Message) {
+			c.AddMovie(m)
+		}
+	}
 
 	// Send the results
 	var msg []string
@@ -285,6 +294,15 @@ func (c *AddMovieConversation) DownloadRelease(m *tb.Message) func(*tb.Message) 
 			if m.Text == opt {
 				switch opt {
 				case torrserver:
+					err := c.env.Torrserver.AddTorrent(c.selectedRelease.DownloadURL, c.selectedMovie.PosterURL)
+					if err != nil {
+						util.SendError(c.env.Bot, m.Sender, "Не удалось добавить релиз в Torrserver!")
+						return
+					}
+					util.Send(
+						c.env.Bot, m.Sender,
+						fmt.Sprintf("Релиз %s успешно добавлен в Torrserver!", c.selectedRelease.Info()))
+					c.env.CM.StopConversation(c)
 				case radarr:
 					_, err := c.env.Radarr.DownloadRelease(c.selectedRelease.GUID)
 					if err != nil {

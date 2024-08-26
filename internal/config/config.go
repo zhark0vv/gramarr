@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/zhark0vv/gim/internal/torrserver"
 	"io/ioutil"
 	"path/filepath"
 
@@ -11,10 +12,11 @@ import (
 )
 
 type Config struct {
-	Telegram Telegram       `json:"telegram"`
-	Bot      Bot            `json:"bot"`
-	Radarr   *radarr.Config `json:"radarr"`
-	Sonarr   *sonarr.Config `json:"sonarr"`
+	Telegram   Telegram           `json:"telegram"`
+	Bot        Bot                `json:"bot"`
+	Radarr     *radarr.Config     `json:"radarr"`
+	Sonarr     *sonarr.Config     `json:"sonarr"`
+	Torrserver *torrserver.Config `json:"torrserver"`
 }
 
 type Telegram struct {

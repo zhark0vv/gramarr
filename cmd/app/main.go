@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/zhark0vv/gim/internal/torrserver"
 	"log"
 	"path/filepath"
 	"time"
@@ -49,6 +50,14 @@ func main() {
 		}
 	}
 
+	var tc *torrserver.Client
+	if conf.Torrserver != nil {
+		tc, err = torrserver.New(*conf.Torrserver)
+		if err != nil {
+			log.Fatalf("failed to create torrserver client: %v", err)
+		}
+	}
+
 	cm := conversation.NewConversationManager()
 	r := router.NewRouter(cm)
 
@@ -62,12 +71,13 @@ func main() {
 	}
 
 	e := &env.Env{
-		Config: conf,
-		Bot:    bot,
-		Users:  users,
-		CM:     cm,
-		Radarr: rc,
-		Sonarr: sn,
+		Config:     conf,
+		Bot:        bot,
+		Users:      users,
+		CM:         cm,
+		Radarr:     rc,
+		Sonarr:     sn,
+		Torrserver: tc,
 	}
 
 	setupHandlers(r, e)

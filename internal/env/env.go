@@ -2,6 +2,7 @@ package env
 
 import (
 	"fmt"
+	"github.com/zhark0vv/gim/internal/torrserver"
 	"strings"
 
 	"github.com/zhark0vv/gim/internal/config"
@@ -14,12 +15,13 @@ import (
 )
 
 type Env struct {
-	Config *config.Config
-	Users  *users.UserDB
-	Bot    *tb.Bot
-	CM     *conversation.ConversationManager
-	Radarr *radarr.Client
-	Sonarr *sonarr.Client
+	Config     *config.Config
+	Users      *users.UserDB
+	Bot        *tb.Bot
+	CM         *conversation.ConversationManager
+	Radarr     *radarr.Client
+	Sonarr     *sonarr.Client
+	Torrserver *torrserver.Client
 }
 
 func (e *Env) RequirePrivate(h func(m *tb.Message)) func(m *tb.Message) {
