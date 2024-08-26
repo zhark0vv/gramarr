@@ -8,7 +8,7 @@ import (
 
 	"github.com/zhark0vv/gramarr/internal/util"
 
-	tb "gopkg.in/tucnak/telebot.v3"
+	tb "gopkg.in/telebot.v3"
 )
 
 func (e *Env) HandleAuth(m *tb.Message) {

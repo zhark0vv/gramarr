@@ -22,7 +22,7 @@ const (
 )
 
 type User struct {
-	ID        int        `json:"id"`
+	ID        int64      `json:"id"`
 	Username  string     `json:"username"`
 	FirstName string     `json:"first_name"`
 	LastName  string     `json:"last_name"`
@@ -58,14 +58,14 @@ func (u User) Recipient() string {
 
 type UserDB struct {
 	users    []User
-	usersMap map[int]User
+	usersMap map[int64]User
 	dbPath   string
 }
 
 func NewUserDB(dbPath string) (db *UserDB, err error) {
 	db = &UserDB{
 		users:    []User{},
-		usersMap: map[int]User{},
+		usersMap: make(map[int64]User),
 		dbPath:   dbPath,
 	}
 
@@ -123,7 +123,7 @@ func (u *UserDB) Delete(user User) error {
 	return nil
 }
 
-func (u *UserDB) User(id int) (User, bool) {
+func (u *UserDB) User(id int64) (User, bool) {
 	user, exists := u.usersMap[id]
 	return user, exists
 }

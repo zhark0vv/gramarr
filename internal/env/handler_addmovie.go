@@ -7,8 +7,8 @@ import (
 
 	"github.com/zhark0vv/gramarr/internal/radarr"
 	"github.com/zhark0vv/gramarr/internal/util"
-	"gopkg.in/tucnak/telebot.v2"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"gopkg.in/telebot.v3"
+	tb "gopkg.in/telebot.v3"
 )
 
 func (e *Env) HandleAddMovie(m *telebot.Message) {
