@@ -3,7 +3,7 @@ package router
 import (
 	"regexp"
 
-	"github.com/zhark0vv/gramarr/internal/conversation"
+	"github.com/zhark0vv/gim/internal/conversation"
 	tb "gopkg.in/telebot.v3"
 )
 
@@ -37,10 +37,11 @@ func (r *Router) HandleConvoFunc(cmd string, h ConvoHandler) {
 	r.convoRoutes[cmd] = h
 }
 
-func (r *Router) Route(m *tb.Message) {
-	if !r.routeConvo(m) && !r.routeCommand(m) {
-		r.routeFallback(m)
+func (r *Router) Route(ctx tb.Context) error {
+	if !r.routeConvo(ctx.Message()) && !r.routeCommand(ctx.Message()) {
+		r.routeFallback(ctx.Message())
 	}
+	return nil
 }
 
 func (r *Router) routeConvo(m *tb.Message) bool {

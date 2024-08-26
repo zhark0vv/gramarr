@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zhark0vv/gramarr/internal/users"
+	"github.com/zhark0vv/gim/internal/users"
 	tb "gopkg.in/telebot.v3"
 )
 

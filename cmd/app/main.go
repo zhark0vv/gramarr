@@ -6,13 +6,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/zhark0vv/gramarr/internal/config"
-	"github.com/zhark0vv/gramarr/internal/conversation"
-	"github.com/zhark0vv/gramarr/internal/env"
-	"github.com/zhark0vv/gramarr/internal/radarr"
-	"github.com/zhark0vv/gramarr/internal/router"
-	"github.com/zhark0vv/gramarr/internal/sonarr"
-	"github.com/zhark0vv/gramarr/internal/users"
+	"github.com/zhark0vv/gim/internal/config"
+	"github.com/zhark0vv/gim/internal/conversation"
+	"github.com/zhark0vv/gim/internal/env"
+	"github.com/zhark0vv/gim/internal/radarr"
+	"github.com/zhark0vv/gim/internal/router"
+	"github.com/zhark0vv/gim/internal/sonarr"
+	"github.com/zhark0vv/gim/internal/users"
 	tb "gopkg.in/telebot.v3"
 )
 

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/zhark0vv/gramarr/internal/config"
-	"github.com/zhark0vv/gramarr/internal/conversation"
-	"github.com/zhark0vv/gramarr/internal/radarr"
-	"github.com/zhark0vv/gramarr/internal/sonarr"
-	"github.com/zhark0vv/gramarr/internal/users"
-	"github.com/zhark0vv/gramarr/internal/util"
+	"github.com/zhark0vv/gim/internal/config"
+	"github.com/zhark0vv/gim/internal/conversation"
+	"github.com/zhark0vv/gim/internal/radarr"
+	"github.com/zhark0vv/gim/internal/sonarr"
+	"github.com/zhark0vv/gim/internal/users"
+	"github.com/zhark0vv/gim/internal/util"
 	tb "gopkg.in/telebot.v3"
 )
 

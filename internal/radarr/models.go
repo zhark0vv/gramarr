@@ -6,14 +6,15 @@ import (
 )
 
 type Movie struct {
+	ID        int          `json:"id"`
 	Title     string       `json:"title"`
 	TitleSlug string       `json:"titleSlug"`
 	Year      int          `json:"year"`
 	PosterURL string       `json:"remotePoster"`
 	TMDBID    int          `json:"tmdbId"`
 	Images    []MovieImage `json:"images"`
-	Path                  string             `json:"path,omitempty"`
-	Monitored             bool               `json:"monitored,omitempty"`
+	Path      string       `json:"path,omitempty"`
+	Monitored bool         `json:"monitored,omitempty"`
 }
 
 func (m Movie) String() string {
@@ -58,12 +59,35 @@ type AddMovieOptions struct {
 }
 
 type RadarrQueue struct {
-	Movie             			Movie          `json:"movie,omitempty"`
+	Movie Movie `json:"movie,omitempty"`
 	//Quality          			Quality   	    `json:"quality,omitempty"`
-	Size						int64           `json:"sizeOnDisk,omitempty"`
-	sizeleft 					int64 		    `json:"sizeleft,omitempty"`
-	timeleft 					time.Time 		`json:"timeleft,omitempty"`
-	estimatedCompletionTime  time.Time 		`json:"estimatedCompletionTime,omitempty"`
-	status 						string 			`json:"status,omitempty"`
-	trackedDownloadStatus 	string 			`json:"trackedDownloadStatus,omitempty"`
+	Size                    int64     `json:"sizeOnDisk,omitempty"`
+	sizeleft                int64     `json:"sizeleft,omitempty"`
+	timeleft                time.Time `json:"timeleft,omitempty"`
+	estimatedCompletionTime time.Time `json:"estimatedCompletionTime,omitempty"`
+	status                  string    `json:"status,omitempty"`
+	trackedDownloadStatus   string    `json:"trackedDownloadStatus,omitempty"`
+}
+
+type Release struct {
+	GUID        string `json:"guid"`
+	Title       string `json:"title"`
+	DownloadURL string `json:"downloadUrl"`
+	InfoURL     string `json:"infoUrl"`
+	Size        int64  `json:"size"`
+}
+
+func (r Release) Info() string {
+	if len(r.Title) > 100 {
+		r.Title = fmt.Sprintf("%s...", r.Title[:100])
+	}
+	return fmt.Sprintf("%s (%s)", r.Title, r.size())
+}
+
+func (r Release) size() string {
+	sizeMB := float64(r.Size) / 1024 / 1024
+	if sizeMB >= 1024 {
+		return fmt.Sprintf("%.1f GB", sizeMB/1024)
+	}
+	return fmt.Sprintf("%.1f MB", sizeMB)
 }

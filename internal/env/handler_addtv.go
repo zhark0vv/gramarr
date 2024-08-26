@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/zhark0vv/gramarr/internal/sonarr"
-	"github.com/zhark0vv/gramarr/internal/util"
+	"github.com/zhark0vv/gim/internal/sonarr"
+	"github.com/zhark0vv/gim/internal/util"
 	"gopkg.in/telebot.v3"
 	tb "gopkg.in/telebot.v3"
 )

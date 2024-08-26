@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/zhark0vv/gramarr/internal/users"
+	"github.com/zhark0vv/gim/internal/users"
 
-	"github.com/zhark0vv/gramarr/internal/util"
+	"github.com/zhark0vv/gim/internal/util"
 
 	tb "gopkg.in/telebot.v3"
 )

@@ -3,7 +3,7 @@ package env
 import (
 	"strings"
 
-	"github.com/zhark0vv/gramarr/internal/util"
+	"github.com/zhark0vv/gim/internal/util"
 	tb "gopkg.in/telebot.v3"
 )
 

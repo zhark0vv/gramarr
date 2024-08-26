@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/zhark0vv/gramarr/internal/radarr"
-	"github.com/zhark0vv/gramarr/internal/sonarr"
+	"github.com/zhark0vv/gim/internal/radarr"
+	"github.com/zhark0vv/gim/internal/sonarr"
 )
 
 type Config struct {

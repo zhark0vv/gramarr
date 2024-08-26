@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/zhark0vv/gramarr/internal/radarr"
-	"github.com/zhark0vv/gramarr/internal/util"
+	"github.com/zhark0vv/gim/internal/radarr"
+	"github.com/zhark0vv/gim/internal/util"
 	"gopkg.in/telebot.v3"
 	tb "gopkg.in/telebot.v3"
 )
@@ -27,7 +27,10 @@ type AddMovieConversation struct {
 	selectedMovie          *radarr.Movie
 	selectedQualityProfile *radarr.Profile
 	selectedFolder         *radarr.Folder
+	releaseResults         []radarr.Release
+	selectedRelease        *radarr.Release
 	env                    *Env
+	movieID                int
 }
 
 func (c *AddMovieConversation) Run(m *tb.Message) {
@@ -99,9 +102,14 @@ func (c *AddMovieConversation) AskPickMovie(m *tb.Message) func(*telebot.Message
 
 		// Not a valid movie selection
 		if c.selectedMovie == nil {
-			util.SendError(c.env.Bot, m.Sender, "Не правильный выбор.")
+			util.SendError(c.env.Bot, m.Sender, "Неправильный выбор.")
 			c.currentStep = c.AskPickMovie(m)
 			return
+		}
+
+		if c.selectedMovie.PosterURL != "" {
+			photo := &tb.Photo{File: tb.FromURL(c.selectedMovie.PosterURL)}
+			c.env.Bot.Send(m.Sender, photo)
 		}
 
 		c.currentStep = c.AskPickMovieQuality(m)
@@ -109,8 +117,7 @@ func (c *AddMovieConversation) AskPickMovie(m *tb.Message) func(*telebot.Message
 }
 
 func (c *AddMovieConversation) AskPickMovieQuality(m *tb.Message) func(*telebot.Message) {
-
-	profiles, err := c.env.Radarr.GetProfile("profile")
+	profiles, err := c.env.Radarr.GetProfile()
 
 	// GetProfile Service Failed
 	if err != nil {
@@ -121,8 +128,8 @@ func (c *AddMovieConversation) AskPickMovieQuality(m *tb.Message) func(*telebot.
 
 	// Send custom reply keyboard
 	var options []string
-	for _, QualityProfile := range profiles {
-		options = append(options, fmt.Sprintf("%v", QualityProfile.Name))
+	for _, qualityProfile := range profiles {
+		options = append(options, fmt.Sprintf("%v", qualityProfile.Name))
 	}
 	options = append(options, "/cancel")
 	util.SendKeyboardList(c.env.Bot, m.Sender, "В каком качестве искать фильм?", options)
@@ -138,7 +145,7 @@ func (c *AddMovieConversation) AskPickMovieQuality(m *tb.Message) func(*telebot.
 
 		// Not a valid selection
 		if c.selectedQualityProfile == nil {
-			util.SendError(c.env.Bot, m.Sender, "Не правильный выбор.")
+			util.SendError(c.env.Bot, m.Sender, "Неправильный выбор.")
 			c.currentStep = c.AskPickMovieQuality(m)
 			return
 		}
@@ -205,7 +212,7 @@ func (c *AddMovieConversation) AskFolder(m *tb.Message) func(*telebot.Message) {
 }
 
 func (c *AddMovieConversation) AddMovie(m *tb.Message) {
-	_, err := c.env.Radarr.AddMovie(*c.selectedMovie, c.selectedQualityProfile.ID, c.selectedFolder.Path)
+	movie, err := c.env.Radarr.AddMovie(*c.selectedMovie, c.selectedQualityProfile.ID, c.selectedFolder.Path)
 
 	// Failed to add movie
 	if err != nil {
@@ -214,17 +221,124 @@ func (c *AddMovieConversation) AddMovie(m *tb.Message) {
 		return
 	}
 
-	if c.selectedMovie.PosterURL != "" {
-		photo := &tb.Photo{File: tb.FromURL(c.selectedMovie.PosterURL)}
-		c.env.Bot.Send(m.Sender, photo)
+	if movie.ID == 0 {
+		util.SendError(c.env.Bot, m.Sender, "Фильм был добавлен ранее, можно удалить и добавить повторно")
+		c.currentStep = c.DeleteMovie(m)
+		return
 	}
 
-	// Notify User
-	util.Send(c.env.Bot, m.Sender, "Фильм был добавлен!")
+	c.movieID = movie.ID
 
 	// Notify Admin
 	adminMsg := fmt.Sprintf("%s добавил фильм '%s'", util.DisplayName(m.Sender), util.EscapeMarkdown(c.selectedMovie.String()))
 	util.SendAdmin(c.env.Bot, c.env.Users.Admins(), adminMsg)
 
-	c.env.CM.StopConversation(c)
+	c.currentStep = c.Releases(m)
+}
+
+func (c *AddMovieConversation) DeleteMovie(m *tb.Message) func(*tb.Message) {
+	const (
+		agree    = "Удаляем и добавляем повторно"
+		disagree = "Не нужно, посмотрю в Radarr"
+	)
+
+	options := []string{
+		agree, disagree, "/cancel",
+	}
+	util.SendKeyboardList(c.env.Bot, m.Sender, "Что делаем с фильмом?", options)
+
+	return func(m *tb.Message) {
+		for _, opt := range options {
+			if opt == agree {
+				movies, err := c.env.Radarr.GetMovies(c.selectedMovie.TMDBID)
+				if err != nil {
+					util.SendError(c.env.Bot, m.Sender, "Не удалось найти фильм для удаления!")
+					return
+				}
+				err = c.env.Radarr.DeleteMovie(movies[0].ID)
+				if err != nil {
+					util.SendError(c.env.Bot, m.Sender, "Не удалось удалить фильм!")
+					return
+				}
+				c.AddMovie(m)
+				return
+			}
+		}
+		util.Send(c.env.Bot, m.Sender, "Не удаляем фильм, проверь Radarr самостоятельно!")
+		c.env.CM.StopConversation(c)
+	}
+}
+
+func (c *AddMovieConversation) DownloadRelease(m *tb.Message) func(*tb.Message) {
+	const (
+		torrserver = "Добавить как ссылку на Torrserver и смотреть сейчас"
+		radarr     = "Скачать в папку через клиент Radarr"
+	)
+
+	options := []string{
+		torrserver, radarr, "/cancel",
+	}
+	util.SendKeyboardList(c.env.Bot, m.Sender, "Как скачиваем релиз?", options)
+
+	return func(m *tb.Message) {
+		for _, opt := range options {
+			if m.Text == opt {
+				switch opt {
+				case torrserver:
+				case radarr:
+					_, err := c.env.Radarr.DownloadRelease(c.selectedRelease.GUID)
+					if err != nil {
+						util.SendError(c.env.Bot, m.Sender, "Не удалось скачать релиз через Radarr!")
+						return
+					}
+					util.Send(
+						c.env.Bot, m.Sender,
+						fmt.Sprintf("Релиз %s успешно скачан через Radarr!", c.selectedRelease.Info()))
+					c.env.CM.StopConversation(c)
+				}
+				break
+			}
+		}
+
+		// Not a valid folder selection
+		if c.selectedRelease == nil {
+			util.SendError(c.env.Bot, m.Sender, "Неправильный выбор, выбери корретно")
+			c.currentStep = c.DownloadRelease(m)
+			return
+		}
+	}
+}
+
+func (c *AddMovieConversation) Releases(m *tb.Message) func(*tb.Message) {
+	releases, err := c.env.Radarr.GetReleases(c.movieID)
+	if err != nil {
+		util.SendError(c.env.Bot, m.Sender, "Не удалось получить релизы")
+	}
+
+	c.releaseResults = releases
+	var options []string
+	for _, r := range releases {
+		options = append(options, fmt.Sprintf("%s", filepath.Base(r.Info())))
+	}
+	options = append(options, "/cancel")
+	util.SendKeyboardList(c.env.Bot, m.Sender, "Список релизов  ", options)
+
+	return func(m *tb.Message) {
+		// Set the selected folder
+		for i, opt := range options {
+			if m.Text == opt {
+				c.selectedRelease = &c.releaseResults[i]
+				break
+			}
+		}
+
+		// Not a valid folder selection
+		if c.selectedRelease == nil {
+			util.SendError(c.env.Bot, m.Sender, "Неправильный выбор, выбери корретно")
+			c.currentStep = c.Releases(m)
+			return
+		}
+
+		c.currentStep = c.DownloadRelease(m)
+	}
 }
