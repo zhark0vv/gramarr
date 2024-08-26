@@ -2,6 +2,7 @@ package radarr
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"regexp"
 	"strings"
@@ -77,11 +78,27 @@ func createApiURL(c Config) string {
 }
 
 func (c *Client) SearchMovies(term string) ([]Movie, error) {
-	resp, err := c.client.R().SetQueryParam("term", term).SetResult([]Movie{}).Get("movie/lookup")
+	// Prepare the request
+	req := c.client.R().
+		SetQueryParam("term", term).
+		SetResult([]Movie{})
+
+	// Log the full request URL
+	fullURL := req.URL + "?term=" + term
+	log.Printf("Sending request to: %s", fullURL)
+
+	// Execute the request
+	resp, err := req.Get("movie/lookup")
 	if err != nil {
+		log.Printf("Failed to get response: %v", err)
 		return nil, err
 	}
 
+	// Log the response status and body
+	log.Printf("Received response with status: %s", resp.Status())
+	log.Printf("Response body: %s", resp.String())
+
+	// Process the response
 	movies := *resp.Result().(*[]Movie)
 	if len(movies) > c.maxResults {
 		movies = movies[:c.maxResults]

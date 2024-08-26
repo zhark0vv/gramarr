@@ -6,14 +6,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/memodota/gramarr/internal/config"
-	"github.com/memodota/gramarr/internal/conversation"
-	"github.com/memodota/gramarr/internal/env"
-	"github.com/memodota/gramarr/internal/radarr"
-	"github.com/memodota/gramarr/internal/router"
-	"github.com/memodota/gramarr/internal/sonarr"
-	"github.com/memodota/gramarr/internal/users"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/zhark0vv/gramarr/internal/config"
+	"github.com/zhark0vv/gramarr/internal/conversation"
+	"github.com/zhark0vv/gramarr/internal/env"
+	"github.com/zhark0vv/gramarr/internal/radarr"
+	"github.com/zhark0vv/gramarr/internal/router"
+	"github.com/zhark0vv/gramarr/internal/sonarr"
+	"github.com/zhark0vv/gramarr/internal/users"
+	tb "gopkg.in/telebot.v3"
 )
 
 // Flags
@@ -26,11 +26,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to load config file: %s", err.Error())
 	}
-
-	//err = config.ValidateConfig(conf) // @todo: doesn't do anything
-	//if err != nil {
-	//	log.Fatal("config error: %s", err.Error())
-	//}
 
 	userPath := filepath.Join(*configDir, "users.json")
 	users, err := users.NewUserDB(userPath)
@@ -92,7 +87,6 @@ func setupHandlers(r *router.Router, e *env.Env) {
 	r.HandleFunc("/addmovie", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleAddMovie)))
 	r.HandleFunc("/addtv", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleAddTVShow)))
 	r.HandleFunc("/users", e.RequirePrivate(e.RequireAuth(users.UAAdmin, e.HandleUsers)))
-	//r.HandleFunc("/radarrqueue", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleRadarrQueue)))
 
 	// Catchall Command
 	r.HandleFallback(e.RequirePrivate(e.RequireAuth(users.UANone, e.HandleFallback)))

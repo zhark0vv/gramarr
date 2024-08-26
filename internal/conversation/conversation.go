@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/patrickmn/go-cache"
-	tb "gopkg.in/tucnak/telebot.v2"
+	tb "gopkg.in/telebot.v3"
 )
 
 type Conversation interface {

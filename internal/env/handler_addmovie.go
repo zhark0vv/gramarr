@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/memodota/gramarr/internal/radarr"
-	"github.com/memodota/gramarr/internal/util"
+	"github.com/zhark0vv/gramarr/internal/radarr"
+	"github.com/zhark0vv/gramarr/internal/util"
 	"gopkg.in/tucnak/telebot.v2"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -43,7 +43,7 @@ func (c *AddMovieConversation) CurrentStep() func(*telebot.Message) {
 }
 
 func (c *AddMovieConversation) AskMovie(m *tb.Message) func(*telebot.Message) {
-	util.Send(c.env.Bot, m.Sender, "Какой фильм вы ищете? Введите название")
+	util.Send(c.env.Bot, m.Sender, "Какой фильм смотрим сегодня?")
 
 	return func(m *tb.Message) {
 		c.movieQuery = m.Text

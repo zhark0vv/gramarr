@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/memodota/gramarr/internal/util"
+	"github.com/zhark0vv/gramarr/internal/util"
 
-	tb "gopkg.in/tucnak/telebot.v2"
+	tb "gopkg.in/telebot.v3"
 )
 
 func (e *Env) HandleStart(m *tb.Message) {

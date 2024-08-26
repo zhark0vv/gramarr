@@ -3,8 +3,8 @@ package env
 import (
 	"strings"
 
-	"github.com/memodota/gramarr/internal/util"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/zhark0vv/gramarr/internal/util"
+	tb "gopkg.in/telebot.v3"
 )
 
 func (e *Env) HandleFallback(m *tb.Message) {

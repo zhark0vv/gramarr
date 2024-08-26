@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/memodota/gramarr/internal/config"
-	"github.com/memodota/gramarr/internal/conversation"
-	"github.com/memodota/gramarr/internal/radarr"
-	"github.com/memodota/gramarr/internal/sonarr"
-	"github.com/memodota/gramarr/internal/users"
-	"github.com/memodota/gramarr/internal/util"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/zhark0vv/gramarr/internal/config"
+	"github.com/zhark0vv/gramarr/internal/conversation"
+	"github.com/zhark0vv/gramarr/internal/radarr"
+	"github.com/zhark0vv/gramarr/internal/sonarr"
+	"github.com/zhark0vv/gramarr/internal/users"
+	"github.com/zhark0vv/gramarr/internal/util"
+	tb "gopkg.in/telebot.v3"
 )
 
 type Env struct {

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"gopkg.in/resty.v1"
+	"github.com/go-resty/resty/v2"
 )
 
 var apiRgx = regexp.MustCompile(`[a-z0-9]{32}`)
@@ -113,17 +113,17 @@ func (c *Client) GetProfile(p string) ([]Profile, error) {
 func (c *Client) AddTVShow(m TVShow, qualityProfile int, path string, seriestype string) (tvShow TVShow, err error) {
 
 	request := AddTVShowRequest{
-		Title:             m.Title,
-		TitleSlug:         m.TitleSlug,
-		Images:            m.Images,
-		QualityProfileID:  qualityProfile,
-		TVDBID:            m.TVDBID,
-		RootFolderPath:    path,
-		Monitored:         true,
-		Year:              m.Year,
-		Seasons:           m.Seasons,
-		AddOptions:        AddTVShowOptions{SearchForMissingEpisodes: true},
-		SeriesType:		seriestype,
+		Title:            m.Title,
+		TitleSlug:        m.TitleSlug,
+		Images:           m.Images,
+		QualityProfileID: qualityProfile,
+		TVDBID:           m.TVDBID,
+		RootFolderPath:   path,
+		Monitored:        true,
+		Year:             m.Year,
+		Seasons:          m.Seasons,
+		AddOptions:       AddTVShowOptions{SearchForMissingEpisodes: true},
+		SeriesType:       seriestype,
 	}
 
 	resp, err := c.client.R().SetBody(request).SetResult(TVShow{}).Post("series")

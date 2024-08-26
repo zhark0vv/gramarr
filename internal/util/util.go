@@ -5,8 +5,9 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"github.com/memodota/gramarr/internal/users"
-	tb "gopkg.in/tucnak/telebot.v2"
+
+	"github.com/zhark0vv/gramarr/internal/users"
+	tb "gopkg.in/telebot.v3"
 )
 
 func Send(bot *tb.Bot, to tb.Recipient, msg string) {

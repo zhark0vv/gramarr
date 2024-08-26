@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/memodota/gramarr/internal/sonarr"
-	"github.com/memodota/gramarr/internal/util"
-	"gopkg.in/tucnak/telebot.v2"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/zhark0vv/gramarr/internal/sonarr"
+	"github.com/zhark0vv/gramarr/internal/util"
+	"gopkg.in/telebot.v3"
+	tb "gopkg.in/telebot.v3"
 )
 
 func (e *Env) HandleAddTVShow(m *telebot.Message) {

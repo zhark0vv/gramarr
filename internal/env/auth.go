@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/memodota/gramarr/internal/users"
+	"github.com/zhark0vv/gramarr/internal/users"
 
-	"github.com/memodota/gramarr/internal/util"
+	"github.com/zhark0vv/gramarr/internal/util"
 
-	tb "gopkg.in/tucnak/telebot.v2"
+	tb "gopkg.in/tucnak/telebot.v3"
 )
 
 func (e *Env) HandleAuth(m *tb.Message) {
@@ -78,8 +78,8 @@ func (e *Env) HandleAuth(m *tb.Message) {
 		e.Users.Create(newUser)
 
 		// Notify User
-		msg = append(msg, "Вы били авторизованы.")
-		msg = append(msg, "Пишите /start чтобы начать.")
+		msg = append(msg, "Вы были авторизованы.")
+		msg = append(msg, "Напишите /start чтобы начала.")
 		util.Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
 
 		// Notify Admin

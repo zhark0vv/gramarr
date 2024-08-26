@@ -3,8 +3,8 @@ package router
 import (
 	"regexp"
 
-	"github.com/memodota/gramarr/internal/conversation"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/zhark0vv/gramarr/internal/conversation"
+	tb "gopkg.in/telebot.v3"
 )
 
 var (
