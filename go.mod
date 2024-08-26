@@ -1,4 +1,4 @@
-module github.com/zhark0vv/gramarr
+module github.com/zhark0vv/gim
 
 go 1.22
 

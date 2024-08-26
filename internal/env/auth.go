@@ -63,7 +63,6 @@ func (e *Env) HandleAuth(m *tb.Message) {
 	if pass == e.Config.Bot.Password {
 		if exists {
 			// Notify User
-			msg = append(msg, "Че те нада ты уже авторизован.")
 			msg = append(msg, "Type /start to begin.")
 			util.Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
 			return
@@ -89,7 +88,7 @@ func (e *Env) HandleAuth(m *tb.Message) {
 	}
 
 	// Notify User
-	util.SendError(e.Bot, m.Sender, "Твой пароль не верен. Начинаю обратный отсчет до активации режима охраны.")
+	util.SendError(e.Bot, m.Sender, "Неверный пароль!")
 
 	// Notify Admin
 	adminMsg := "%s сделал не верную попытку войти: %s"
