@@ -1,6 +1,9 @@
 package sonarr
 
-import "fmt"
+import (
+	"fmt"
+	"net/url"
+)
 
 type TVShow struct {
 	ID         int             `json:"ID"`
@@ -97,4 +100,17 @@ func (r Release) size() string {
 		return fmt.Sprintf("%.1f GB", sizeMB/1024)
 	}
 	return fmt.Sprintf("%.1f MB", sizeMB)
+}
+
+func (r Release) GetDownloadURL(replaceURL *string, replacePort *int) string {
+	u, err := url.Parse(r.DownloadURL)
+	if err != nil {
+		return r.DownloadURL
+	}
+
+	if replaceURL != nil && replacePort != nil {
+		u.Host = fmt.Sprintf("%s:%d", *replaceURL, *replacePort)
+	}
+
+	return u.String()
 }

@@ -55,20 +55,24 @@ func createApiURL(c Config) string {
 }
 
 func (c *Client) AddTorrent(torrentLink, posterLink string) error {
+	body := map[string]any{
+		"action":     "add",
+		"link":       torrentLink,
+		"poster":     posterLink,
+		"save_to_db": true,
+	}
+
 	resp, err := c.client.R().
-		SetBody(map[string]any{
-			"action":     "add",
-			"link":       torrentLink,
-			"poster":     posterLink,
-			"save_to_db": true,
-		}).
+		SetBody(body).
 		Post("torrents")
 
 	if err != nil {
 		return fmt.Errorf("error adding torrent to torrent endpoint: %w", err)
 	}
 	if resp.StatusCode() != http.StatusOK {
-		return fmt.Errorf("error adding torrent to torrent endpoint: status %d", resp.StatusCode())
+		return fmt.Errorf("error adding torrent to torrent endpoint: status %d: req body: %s",
+			resp.StatusCode(),
+			body)
 	}
 
 	return nil
