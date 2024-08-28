@@ -15,7 +15,11 @@ type Handler func(*tb.Message)
 type ConvoHandler func(conversation.Conversation, *tb.Message)
 
 func NewRouter(cm *conversation.ConversationManager) *Router {
-	return &Router{cm: cm, routes: map[string]Handler{}, convoRoutes: map[string]ConvoHandler{}}
+	return &Router{
+		cm:          cm,
+		routes:      map[string]Handler{},
+		convoRoutes: map[string]ConvoHandler{},
+	}
 }
 
 type Router struct {

@@ -1,5 +1,5 @@
-# GIM - Grammar Improved
-A [Radarr](https://github.com/Radarr/Radarr)/[Sonarr](https://github.com/Sonarr/Sonarr) Telegram Bot featuring user authentication/level access.
+# GrIm - Grammar Improved
+A [Radarr](https://github.com/Radarr/Radarr)/[Sonarr](https://github.com/Sonarr/Sonarr)/[Torrserver](https://github.com/YouROK/TorrServer) SelfHosted Telegram Bot featuring user authentication/level access.
 
 ## Features
 
@@ -15,23 +15,37 @@ A [Radarr](https://github.com/Radarr/Radarr)/[Sonarr](https://github.com/Sonarr/
 - Search for Movies by name.
 - Choose which quality profile you want to download.
 
-## Requirements
+### Improvements
 
-### If running from source
+- [NEW] Torrserver Support: you can add the series to Torrserver directly
+- [NEW] Releases choosing: you can choose release manually from your tracker 
+- [NEW] Inline usage for both series and movie searching through ant chat with the bot
+- Better russian translating
+- Dependencies upgrade
+
+### Inline usage
+- Just tap @bot ... and any query:
+- ![img.png](img.png)
+
+
+## Requirements
+### Running from source
 
 - Go
 
 ## Configuration
 
 - Copy the `config.json.template` file to `config.json` and set-up your configuration;
-- Put the `config.json` alongside with the binary downloaded from [releases](https://github.com/alcmoraes/gim/releases);
 
 ## Running it
 
 ### From source
 
 ```bash
-$ go get github.com/zhark0vv/gramarr
-$ cd $GOPATH/src/github.com/zhark0vv/gramarr
+$ go get github.com/zhark0vv/gim
+$ cd $GOPATH/src/github.com/zhark0vv/gim
 $ go run .
 ```
+
+## TODO
+- English translation

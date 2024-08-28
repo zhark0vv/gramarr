@@ -34,6 +34,22 @@ type AddMovieConversation struct {
 }
 
 func (c *AddMovieConversation) Run(m *tb.Message) {
+	payload := util.PayloadFromText(m.Payload)
+
+	i, ok := payload.AsIndex()
+	if ok {
+		c.movieResults, ok = c.env.GetGlobalState(m.Sender.ID, "movies").([]radarr.Movie)
+		if !ok {
+			util.SendError(c.env.Bot, m.Sender, "Нет контекста по выбранным фильмам, использование команды невозможно!")
+			c.currentStep = c.AskMovie(m)
+			return
+		}
+
+		c.selectedMovie = &c.movieResults[i]
+		c.currentStep = c.AskPickMovieQuality(m)
+		return
+	}
+
 	c.currentStep = c.AskMovie(m)
 }
 
@@ -317,13 +333,6 @@ func (c *AddMovieConversation) DownloadRelease(m *tb.Message) func(*tb.Message) 
 				break
 			}
 		}
-
-		// Not a valid folder selection
-		if c.selectedRelease == nil {
-			util.SendError(c.env.Bot, m.Sender, "Неправильный выбор, выбери корретно")
-			c.currentStep = c.DownloadRelease(m)
-			return
-		}
 	}
 }
 
@@ -336,7 +345,7 @@ func (c *AddMovieConversation) Releases(m *tb.Message) func(*tb.Message) {
 	c.releaseResults = releases
 	var options []string
 	for _, r := range releases {
-		options = append(options, fmt.Sprintf("%s", filepath.Base(r.Info())))
+		options = append(options, r.Info())
 	}
 	options = append(options, "/cancel")
 	util.SendKeyboardList(c.env.Bot, m.Sender, "Список релизов  ", options)
@@ -352,7 +361,7 @@ func (c *AddMovieConversation) Releases(m *tb.Message) func(*tb.Message) {
 
 		// Not a valid folder selection
 		if c.selectedRelease == nil {
-			util.SendError(c.env.Bot, m.Sender, "Неправильный выбор, выбери корретно")
+			util.SendError(c.env.Bot, m.Sender, "Неправильный выбор релиза, выбери корретно")
 			c.currentStep = c.Releases(m)
 			return
 		}

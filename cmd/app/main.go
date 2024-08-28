@@ -79,6 +79,7 @@ func main() {
 		Sonarr:     sn,
 		Torrserver: tc,
 	}
+	e.Init()
 
 	setupHandlers(r, e)
 	log.Print("Gramarr is up and running. Go call your bot!")
@@ -88,6 +89,7 @@ func main() {
 func setupHandlers(r *router.Router, e *env.Env) {
 	// Send all telegram messages to our custom router
 	e.Bot.Handle(tb.OnText, r.Route)
+	e.Bot.Handle(tb.OnQuery, e.Inline())
 
 	// Commands
 	r.HandleFunc("/auth", e.RequirePrivate(e.RequireAuth(users.UANone, e.HandleAuth)))

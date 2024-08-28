@@ -2,11 +2,13 @@ package sonarr
 
 import (
 	"fmt"
+	"github.com/go-resty/resty/v2"
+	"golang.org/x/sync/errgroup"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
-
-	"github.com/go-resty/resty/v2"
+	"sync"
 )
 
 var apiRgx = regexp.MustCompile(`[a-z0-9]{32}`)
@@ -67,7 +69,7 @@ func createApiURL(c Config) string {
 	if c.Port != 80 {
 		u.Host = fmt.Sprintf("%s:%d", c.Hostname, c.Port)
 	}
-	u.Path = "/api"
+	u.Path = "/api/v3"
 	if c.URLBase != "" {
 		u.Path = fmt.Sprintf("%s/api", c.URLBase)
 	}
@@ -99,7 +101,6 @@ func (c *Client) GetFolders() ([]Folder, error) {
 }
 
 func (c *Client) GetProfile(p string) ([]Profile, error) {
-
 	resp, err := c.client.R().SetResult([]Profile{}).Get(p)
 	if err != nil {
 		return nil, err
@@ -133,5 +134,92 @@ func (c *Client) AddTVShow(m TVShow, qualityProfile int, path string, seriestype
 	}
 
 	tvShow = *resp.Result().(*TVShow)
+	return
+}
+
+func (c *Client) GetTVShows(tmdbID int) (movie []TVShow, err error) {
+	resp, err := c.client.R().
+		SetResult([]TVShow{}).
+		SetQueryParam("tmdbId", strconv.Itoa(tmdbID)).
+		Get("series")
+	if err != nil {
+		return
+	}
+
+	movie = *resp.Result().(*[]TVShow)
+	return
+}
+
+func (c *Client) GetReleases(seriesID int, seasons []TVShowSeason) ([]Release, error) {
+	eg := errgroup.Group{}
+	mu := sync.Mutex{}
+
+	// Use a map to track unique releases
+	releaseMap := make(map[string]Release)
+
+	for _, season := range seasons {
+		season := season
+
+		eg.Go(func() error {
+			resp, err := c.client.R().
+				SetResult([]Release{}).
+				SetQueryParams(
+					map[string]string{
+						"seriesId":     strconv.Itoa(seriesID),
+						"seasonNumber": strconv.Itoa(season.SeasonNumber),
+					}).
+				Get("release")
+
+			if err != nil {
+				return fmt.Errorf("failed to get releases: %w", err)
+			}
+
+			mu.Lock()
+			defer mu.Unlock()
+
+			for _, release := range *resp.Result().(*[]Release) {
+				if _, exists := releaseMap[release.Title]; !exists {
+					releaseMap[release.Title] = release
+				}
+			}
+			return nil
+		})
+	}
+
+	if err := eg.Wait(); err != nil {
+		return nil, err
+	}
+
+	// Convert the map back to a slice
+	releasesBatch := make([]Release, 0, len(releaseMap))
+	for _, release := range releaseMap {
+		releasesBatch = append(releasesBatch, release)
+	}
+
+	return releasesBatch, nil
+}
+
+func (c *Client) DeleteTVShow(seriesID int) (err error) {
+	_, err = c.client.R().
+		SetQueryParam("deleteFiles", "true").
+		Delete("series/" + strconv.Itoa(seriesID))
+	return
+}
+
+func (c *Client) DownloadRelease(guid string) (r Release, err error) {
+	resp, err := c.client.R().
+		SetBody(map[string]string{
+			"guid": guid,
+			// TODO: parametrize id
+			"indexerId": "1",
+		}).
+		SetResult(Release{}).
+		Post("release")
+
+	if err != nil {
+		return Release{}, fmt.Errorf("failed to download release: %w", err)
+	}
+
+	r = *resp.Result().(*Release)
 	return
 }

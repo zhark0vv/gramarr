@@ -12,14 +12,31 @@ type Movie struct {
 	Year      int          `json:"year"`
 	PosterURL string       `json:"remotePoster"`
 	TMDBID    int          `json:"tmdbId"`
+	Ratings   Ratings      `json:"ratings"`
 	Images    []MovieImage `json:"images"`
 	Path      string       `json:"path,omitempty"`
 	Monitored bool         `json:"monitored,omitempty"`
 }
 
+type Ratings struct {
+	IMDB RatingValue `json:"imdb"`
+	TMDB RatingValue `json:"tmdb"`
+}
+
+type RatingValue struct {
+	Value float64 `json:"value"`
+}
+
+func (m Movie) Rating() float64 {
+	return (m.Ratings.IMDB.Value + m.Ratings.TMDB.Value) / 2
+}
+
 func (m Movie) String() string {
 	if m.Year != 0 {
-		return fmt.Sprintf("%s (%d)", m.Title, m.Year)
+		return fmt.Sprintf("(Фильм: %.2f) %s (%d)",
+			m.Rating(),
+			m.Title,
+			m.Year)
 	} else {
 		return m.Title
 	}
