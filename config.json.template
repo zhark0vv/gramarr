@@ -25,5 +25,10 @@
     "username": "",
     "password": "",
     "maxResults": 6
+  },
+    "torrserver": {
+      "hostname": "",
+      "port": ""
+    }
   }
 }

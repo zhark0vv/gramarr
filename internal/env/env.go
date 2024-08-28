@@ -2,24 +2,33 @@ package env
 
 import (
 	"fmt"
+	"github.com/zhark0vv/gim/internal/torrserver"
 	"strings"
+	"sync"
 
-	"github.com/memodota/gramarr/internal/config"
-	"github.com/memodota/gramarr/internal/conversation"
-	"github.com/memodota/gramarr/internal/radarr"
-	"github.com/memodota/gramarr/internal/sonarr"
-	"github.com/memodota/gramarr/internal/users"
-	"github.com/memodota/gramarr/internal/util"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/zhark0vv/gim/internal/config"
+	"github.com/zhark0vv/gim/internal/conversation"
+	"github.com/zhark0vv/gim/internal/radarr"
+	"github.com/zhark0vv/gim/internal/sonarr"
+	"github.com/zhark0vv/gim/internal/users"
+	"github.com/zhark0vv/gim/internal/util"
+	tb "gopkg.in/telebot.v3"
 )
 
 type Env struct {
-	Config *config.Config
-	Users  *users.UserDB
-	Bot    *tb.Bot
-	CM     *conversation.ConversationManager
-	Radarr *radarr.Client
-	Sonarr *sonarr.Client
+	Config      *config.Config
+	Users       *users.UserDB
+	Bot         *tb.Bot
+	CM          *conversation.ConversationManager
+	Radarr      *radarr.Client
+	Sonarr      *sonarr.Client
+	Torrserver  *torrserver.Client
+	mu          sync.Mutex
+	globalState map[string]interface{}
+}
+
+func (e *Env) Init() {
+	e.globalState = make(map[string]interface{})
 }
 
 func (e *Env) RequirePrivate(h func(m *tb.Message)) func(m *tb.Message) {
@@ -77,4 +86,18 @@ func (e *Env) RequireAuth(access users.UserAccess, h func(m *tb.Message)) func(m
 
 		h(m)
 	}
+}
+
+func (e *Env) SetGlobalState(userID int64, key string, value any) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.globalState[fmt.Sprintf("%s_%d", key, userID)] = value
+}
+
+func (e *Env) GetGlobalState(userID int64, key string) any {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	st := e.globalState[fmt.Sprintf("%s_%d", key, userID)]
+	delete(e.globalState, fmt.Sprintf("%s_%d", key, userID))
+	return st
 }

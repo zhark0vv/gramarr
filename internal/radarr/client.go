@@ -2,11 +2,13 @@ package radarr
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 
-	"gopkg.in/resty.v1"
+	"github.com/go-resty/resty/v2"
 )
 
 var (
@@ -34,7 +36,7 @@ func New(c Config) (*Client, error) {
 	baseURL := createApiURL(c)
 
 	r := resty.New()
-	r.SetHostURL(baseURL)
+	r.SetBaseURL(baseURL)
 	r.SetHeader("Accept", "application/json")
 	r.SetQueryParam("apikey", c.APIKey)
 	if c.Username != "" && c.Password != "" {
@@ -68,7 +70,7 @@ func createApiURL(c Config) string {
 		u.Host = fmt.Sprintf("%s:%d", c.Hostname, c.Port)
 	}
 
-	u.Path = "/api"
+	u.Path = "/api/v3"
 	if c.URLBase != "" {
 		u.Path = fmt.Sprintf("%s/api", c.URLBase)
 	}
@@ -77,11 +79,27 @@ func createApiURL(c Config) string {
 }
 
 func (c *Client) SearchMovies(term string) ([]Movie, error) {
-	resp, err := c.client.R().SetQueryParam("term", term).SetResult([]Movie{}).Get("movie/lookup")
+	// Prepare the request
+	req := c.client.R().
+		SetQueryParam("term", term).
+		SetResult([]Movie{})
+
+	// Log the full request URL
+	fullURL := req.URL + "?term=" + term
+	log.Printf("Sending request to: %s", fullURL)
+
+	// Execute the request
+	resp, err := req.Get("movie/lookup")
 	if err != nil {
+		log.Printf("Failed to get response: %v", err)
 		return nil, err
 	}
 
+	// Log the response status and body
+	log.Printf("Received response with status: %s", resp.Status())
+	log.Printf("Response body: %s", resp.String())
+
+	// Process the response
 	movies := *resp.Result().(*[]Movie)
 	if len(movies) > c.maxResults {
 		movies = movies[:c.maxResults]
@@ -89,9 +107,10 @@ func (c *Client) SearchMovies(term string) ([]Movie, error) {
 	return movies, nil
 }
 
-func (c *Client) GetProfile(prfl string) ([]Profile, error) {
-
-	resp, err := c.client.R().SetResult([]Profile{}).Get(prfl)
+func (c *Client) GetProfile() ([]Profile, error) {
+	resp, err := c.client.R().
+		SetResult([]Profile{}).
+		Get("qualityprofile")
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +131,6 @@ func (c *Client) GetFolders() ([]Folder, error) {
 }
 
 func (c *Client) AddMovie(m Movie, qualityProfile int, path string) (movie Movie, err error) {
-
 	request := AddMovieRequest{
 		Title:            m.Title,
 		TitleSlug:        m.TitleSlug,
@@ -122,7 +140,7 @@ func (c *Client) AddMovie(m Movie, qualityProfile int, path string) (movie Movie
 		RootFolderPath:   path,
 		Monitored:        true,
 		Year:             m.Year,
-		AddOptions:       AddMovieOptions{SearchForMovie: true},
+		AddOptions:       AddMovieOptions{SearchForMovie: false},
 	}
 
 	resp, err := c.client.R().SetBody(request).SetResult(Movie{}).Post("movie")
@@ -134,10 +152,43 @@ func (c *Client) AddMovie(m Movie, qualityProfile int, path string) (movie Movie
 	return
 }
 
-//func (c *Client) DeleteMovie(movieId int) (err error) {
-//	_, err = c.client.R().SetQueryParam("deleteFiles", "true").Delete("movie/" + strconv.Itoa(movieId))
-//	return
-//}
+func (c *Client) GetReleases(movieID int) ([]Release, error) {
+	resp, err := c.client.R().
+		SetResult([]Release{}).
+		SetQueryParam("movieId", strconv.Itoa(movieID)).
+		Get("release")
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get releases: %w", err)
+	}
+
+	releases := *resp.Result().(*[]Release)
+	return releases, nil
+}
+
+func (c *Client) DeleteMovie(movieId int) (err error) {
+	_, err = c.client.R().
+		SetQueryParam("deleteFiles", "true").Delete("movie/" + strconv.Itoa(movieId))
+	return
+}
+
+func (c *Client) DownloadRelease(guid string) (r Release, err error) {
+	resp, err := c.client.R().
+		SetBody(map[string]string{
+			"guid": guid,
+			// TODO: parametrize id
+			"indexerId": "1",
+		}).
+		SetResult(Release{}).
+		Post("release")
+
+	if err != nil {
+		return Release{}, fmt.Errorf("failed to download release: %w", err)
+	}
+
+	r = *resp.Result().(*Release)
+	return
+}
 
 //func (c *Client) UpdateMovie(m Movie) (movie Movie, err error) {
 //	resp, err := c.client.R().SetBody(m).SetResult(Movie{}).Put("movie")
@@ -161,19 +212,18 @@ func (c *Client) AddMovie(m Movie, qualityProfile int, path string) (movie Movie
 //	return
 //}
 
-//func (c *Client) GetMovies() (movies []Movie, err error) {
-//	resp, err := c.client.R().SetResult([]Movie{}).Get("movie")
-//	if err != nil {
-//		return
-//	}
-//	allMovies := *resp.Result().(*[]Movie)
-//	for _, movie := range allMovies {
-//		if movie.Monitored {
-//			movies = append(movies, movie)
-//		}
-//	}
-//	return
-//}
+func (c *Client) GetMovies(tmdbID int) (movie []Movie, err error) {
+	resp, err := c.client.R().
+		SetResult([]Movie{}).
+		SetQueryParam("tmdbId", strconv.Itoa(tmdbID)).
+		Get("movie")
+	if err != nil {
+		return
+	}
+
+	movie = *resp.Result().(*[]Movie)
+	return
+}
 
 func (c *Client) GetRadarrQueue() ([]RadarrQueue, error) {
 	resp, err := c.client.R().SetResult([]RadarrQueue{}).Get("queue")

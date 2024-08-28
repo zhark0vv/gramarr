@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/memodota/gramarr/internal/users"
+	"github.com/zhark0vv/gim/internal/users"
 
-	"github.com/memodota/gramarr/internal/util"
+	"github.com/zhark0vv/gim/internal/util"
 
-	tb "gopkg.in/tucnak/telebot.v2"
+	tb "gopkg.in/telebot.v3"
 )
 
 func (e *Env) HandleAuth(m *tb.Message) {
@@ -63,7 +63,6 @@ func (e *Env) HandleAuth(m *tb.Message) {
 	if pass == e.Config.Bot.Password {
 		if exists {
 			// Notify User
-			msg = append(msg, "Че те нада ты уже авторизован.")
 			msg = append(msg, "Type /start to begin.")
 			util.Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
 			return
@@ -78,8 +77,8 @@ func (e *Env) HandleAuth(m *tb.Message) {
 		e.Users.Create(newUser)
 
 		// Notify User
-		msg = append(msg, "Вы били авторизованы.")
-		msg = append(msg, "Пишите /start чтобы начать.")
+		msg = append(msg, "Вы были авторизованы.")
+		msg = append(msg, "Напишите /start чтобы начала.")
 		util.Send(e.Bot, m.Sender, strings.Join(msg, "\n"))
 
 		// Notify Admin
@@ -89,7 +88,7 @@ func (e *Env) HandleAuth(m *tb.Message) {
 	}
 
 	// Notify User
-	util.SendError(e.Bot, m.Sender, "Твой пароль не верен. Начинаю обратный отсчет до активации режима охраны.")
+	util.SendError(e.Bot, m.Sender, "Неверный пароль!")
 
 	// Notify Admin
 	adminMsg := "%s сделал не верную попытку войти: %s"

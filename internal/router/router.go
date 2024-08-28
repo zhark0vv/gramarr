@@ -3,8 +3,8 @@ package router
 import (
 	"regexp"
 
-	"github.com/memodota/gramarr/internal/conversation"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/zhark0vv/gim/internal/conversation"
+	tb "gopkg.in/telebot.v3"
 )
 
 var (
@@ -15,7 +15,11 @@ type Handler func(*tb.Message)
 type ConvoHandler func(conversation.Conversation, *tb.Message)
 
 func NewRouter(cm *conversation.ConversationManager) *Router {
-	return &Router{cm: cm, routes: map[string]Handler{}, convoRoutes: map[string]ConvoHandler{}}
+	return &Router{
+		cm:          cm,
+		routes:      map[string]Handler{},
+		convoRoutes: map[string]ConvoHandler{},
+	}
 }
 
 type Router struct {
@@ -37,10 +41,11 @@ func (r *Router) HandleConvoFunc(cmd string, h ConvoHandler) {
 	r.convoRoutes[cmd] = h
 }
 
-func (r *Router) Route(m *tb.Message) {
-	if !r.routeConvo(m) && !r.routeCommand(m) {
-		r.routeFallback(m)
+func (r *Router) Route(ctx tb.Context) error {
+	if !r.routeConvo(ctx.Message()) && !r.routeCommand(ctx.Message()) {
+		r.routeFallback(ctx.Message())
 	}
+	return nil
 }
 
 func (r *Router) routeConvo(m *tb.Message) bool {

@@ -22,7 +22,7 @@ const (
 )
 
 type User struct {
-	ID        int        `json:"id"`
+	ID        int64      `json:"id"`
 	Username  string     `json:"username"`
 	FirstName string     `json:"first_name"`
 	LastName  string     `json:"last_name"`
@@ -53,19 +53,19 @@ func (u User) DisplayName() string {
 }
 
 func (u User) Recipient() string {
-	return strconv.Itoa(u.ID)
+	return strconv.Itoa(int(u.ID))
 }
 
 type UserDB struct {
 	users    []User
-	usersMap map[int]User
+	usersMap map[int64]User
 	dbPath   string
 }
 
 func NewUserDB(dbPath string) (db *UserDB, err error) {
 	db = &UserDB{
 		users:    []User{},
-		usersMap: map[int]User{},
+		usersMap: make(map[int64]User),
 		dbPath:   dbPath,
 	}
 
@@ -123,12 +123,12 @@ func (u *UserDB) Delete(user User) error {
 	return nil
 }
 
-func (u *UserDB) User(id int) (User, bool) {
+func (u *UserDB) User(id int64) (User, bool) {
 	user, exists := u.usersMap[id]
 	return user, exists
 }
 
-func (u *UserDB) Exists(id int) bool {
+func (u *UserDB) Exists(id int64) bool {
 	_, ok := u.usersMap[id]
 	return ok
 }
@@ -167,7 +167,7 @@ func (u *UserDB) Revoked() []User {
 	return result
 }
 
-func (u *UserDB) IsAdmin(id int) bool {
+func (u *UserDB) IsAdmin(id int64) bool {
 	user, ok := u.usersMap[id]
 	if !ok {
 		return false
@@ -175,7 +175,7 @@ func (u *UserDB) IsAdmin(id int) bool {
 	return user.Access == UAAdmin
 }
 
-func (u *UserDB) IsMember(id int) bool {
+func (u *UserDB) IsMember(id int64) bool {
 	user, ok := u.usersMap[id]
 	if !ok {
 		return false
@@ -183,7 +183,7 @@ func (u *UserDB) IsMember(id int) bool {
 	return user.Access == UAMember
 }
 
-func (u *UserDB) IsRevoked(id int) bool {
+func (u *UserDB) IsRevoked(id int64) bool {
 	user, ok := u.usersMap[id]
 	if !ok {
 		return false
@@ -244,7 +244,7 @@ func (u *UserDB) Load() error {
 
 	json.Unmarshal(raw, &db)
 	u.users = db.Users
-	u.usersMap = map[int]User{}
+	u.usersMap = make(map[int64]User)
 	for _, user := range db.Users {
 		u.usersMap[user.ID] = user
 	}

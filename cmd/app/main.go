@@ -2,18 +2,19 @@ package main
 
 import (
 	"flag"
+	"github.com/zhark0vv/gim/internal/torrserver"
 	"log"
 	"path/filepath"
 	"time"
 
-	"github.com/memodota/gramarr/internal/config"
-	"github.com/memodota/gramarr/internal/conversation"
-	"github.com/memodota/gramarr/internal/env"
-	"github.com/memodota/gramarr/internal/radarr"
-	"github.com/memodota/gramarr/internal/router"
-	"github.com/memodota/gramarr/internal/sonarr"
-	"github.com/memodota/gramarr/internal/users"
-	tb "gopkg.in/tucnak/telebot.v2"
+	"github.com/zhark0vv/gim/internal/config"
+	"github.com/zhark0vv/gim/internal/conversation"
+	"github.com/zhark0vv/gim/internal/env"
+	"github.com/zhark0vv/gim/internal/radarr"
+	"github.com/zhark0vv/gim/internal/router"
+	"github.com/zhark0vv/gim/internal/sonarr"
+	"github.com/zhark0vv/gim/internal/users"
+	tb "gopkg.in/telebot.v3"
 )
 
 // Flags
@@ -26,11 +27,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to load config file: %s", err.Error())
 	}
-
-	//err = config.ValidateConfig(conf) // @todo: doesn't do anything
-	//if err != nil {
-	//	log.Fatal("config error: %s", err.Error())
-	//}
 
 	userPath := filepath.Join(*configDir, "users.json")
 	users, err := users.NewUserDB(userPath)
@@ -54,6 +50,14 @@ func main() {
 		}
 	}
 
+	var tc *torrserver.Client
+	if conf.Torrserver != nil {
+		tc, err = torrserver.New(*conf.Torrserver)
+		if err != nil {
+			log.Fatalf("failed to create torrserver client: %v", err)
+		}
+	}
+
 	cm := conversation.NewConversationManager()
 	r := router.NewRouter(cm)
 
@@ -67,13 +71,15 @@ func main() {
 	}
 
 	e := &env.Env{
-		Config: conf,
-		Bot:    bot,
-		Users:  users,
-		CM:     cm,
-		Radarr: rc,
-		Sonarr: sn,
+		Config:     conf,
+		Bot:        bot,
+		Users:      users,
+		CM:         cm,
+		Radarr:     rc,
+		Sonarr:     sn,
+		Torrserver: tc,
 	}
+	e.Init()
 
 	setupHandlers(r, e)
 	log.Print("Gramarr is up and running. Go call your bot!")
@@ -83,6 +89,7 @@ func main() {
 func setupHandlers(r *router.Router, e *env.Env) {
 	// Send all telegram messages to our custom router
 	e.Bot.Handle(tb.OnText, r.Route)
+	e.Bot.Handle(tb.OnQuery, e.Inline())
 
 	// Commands
 	r.HandleFunc("/auth", e.RequirePrivate(e.RequireAuth(users.UANone, e.HandleAuth)))
@@ -92,7 +99,6 @@ func setupHandlers(r *router.Router, e *env.Env) {
 	r.HandleFunc("/addmovie", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleAddMovie)))
 	r.HandleFunc("/addtv", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleAddTVShow)))
 	r.HandleFunc("/users", e.RequirePrivate(e.RequireAuth(users.UAAdmin, e.HandleUsers)))
-	//r.HandleFunc("/radarrqueue", e.RequirePrivate(e.RequireAuth(users.UAMember, e.HandleRadarrQueue)))
 
 	// Catchall Command
 	r.HandleFallback(e.RequirePrivate(e.RequireAuth(users.UANone, e.HandleFallback)))
