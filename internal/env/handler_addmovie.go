@@ -310,7 +310,11 @@ func (c *AddMovieConversation) DownloadRelease(m *tb.Message) func(*tb.Message) 
 			if m.Text == opt {
 				switch opt {
 				case torrserver:
-					err := c.env.Torrserver.AddTorrent(c.selectedRelease.DownloadURL, c.selectedMovie.PosterURL)
+					err := c.env.Torrserver.AddTorrent(
+						c.selectedRelease.GetDownloadURL(
+							c.env.Config.Torrserver.TrackerHost,
+							c.env.Config.Torrserver.TrackerPort),
+						c.selectedMovie.PosterURL)
 					if err != nil {
 						util.SendError(c.env.Bot, m.Sender, "Не удалось добавить релиз в Torrserver!")
 						return
